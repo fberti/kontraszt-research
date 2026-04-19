@@ -7,8 +7,12 @@ Kutatásunkban nem a figyelmet mint pszichológiai állapotot mérjük közvetle
 
 **Backend:**
 A scraper:
+
 https://github.com/fberti/kontraszt
 
 Az llm elemző szolgáltatás:
+
 https://github.com/fberti/kontraszt-llm_service
+
+
 *Miskolci Egyetem*
