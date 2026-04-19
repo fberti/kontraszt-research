@@ -4,7 +4,7 @@ __generated_with = "0.23.1"
 app = marimo.App()
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import polars as pl
     import marimo as mo
@@ -12,7 +12,7 @@ def _():
     return mo, pl
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(pl):
     df_headlineDefinitions = pl.read_parquet(
         "data/headlineDefinitions_2026-04-19.parquet"
@@ -22,7 +22,7 @@ def _(pl):
     return df_headlineDefinitions, df_headlines, df_llmAnalysis
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_headlineDefinitions, df_headlines, df_llmAnalysis, pl):
     # Átlagos vizuális pontszám egyedi címsoronként (több scrape-pillanatkép is létezik)
     df_vis = (
@@ -60,7 +60,7 @@ def _(df_headlineDefinitions, df_headlines, df_llmAnalysis, pl):
     return (df_normed,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_normed, pl):
     # Portálok besorolása kormányközeli / független / egyéb kategóriákba
     GOV_PORTALS = [
@@ -94,7 +94,7 @@ def _(df_normed, pl):
     return (df_classified,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_classified, pl):
     ENTITIES = ["Magyar Péter", "Orbán Viktor"]
 
@@ -113,7 +113,7 @@ def _(df_classified, pl):
     return (df_entities,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_entities, mo, pl):
     _sample_sizes = (
         df_entities.group_by(["entity", "portal_type"])
@@ -130,7 +130,7 @@ def _(df_entities, mo, pl):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_entities, mo, pl):
     _desc = (
         df_entities.group_by(["entity", "portal_type"])
@@ -155,7 +155,7 @@ def _(df_entities, mo, pl):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_entities, pl):
     import numpy as np
 
@@ -174,7 +174,7 @@ def _(df_entities, pl):
     return arrays, np
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(arrays, np):
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
@@ -305,7 +305,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(arrays, np, plt):
     _COLOR_GOV = "#c0392b"
     _COLOR_IND = "#2980b9"
@@ -401,7 +401,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(arrays, mo, pl):
     from scipy import stats as scipy_stats
 
@@ -489,7 +489,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(df_tests, mo, pl):
     # H1 hipotézis végső verdiktje: szignifikáns tesztek számának összesítése és értelmezés
     def _get(entity, metric):
