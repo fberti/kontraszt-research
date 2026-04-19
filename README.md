@@ -4,4 +4,11 @@ A korábbi kutatások külön-külön sokat foglalkoztak a figyelem szűkösség
 
 Kutatásunkban nem a figyelmet mint pszichológiai állapotot mérjük közvetlenül, hanem annak szerkesztői leképeződését. Nem azt figyeljük, hogy az olvasó ténylegesen mire kattintott, mennyi ideig olvasott vagy mire emlékszik, hanem azt, hogy a szerkesztőség mely híreket próbálja figyelemre méltóvá tenni. Röviden: a kutatásunk a figyelemgazdaság kínálati oldalát méri. Ezt a címlapi kiemelés, a headline mérete, elhelyezkedése és érzelmi tónusa jelzi.
 
+
+**Backend:**
+A scraper:
+https://github.com/fberti/kontraszt
+
+Az llm elemző szolgáltatás:
+https://github.com/fberti/kontraszt-llm_service
 *Miskolci Egyetem*
