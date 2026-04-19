@@ -13,6 +13,16 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # H1 – Polarizáció
+
+    **Hipotézis:** A kormányközeli és a független hírportálok jelentősen eltérő érzelmi szentimenttel és vizuális súllyal (score) jelenítik meg ugyanazokat a politikai szereplőket.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
 def _(pl):
     df_headlineDefinitions = pl.read_parquet(
         "data/headlineDefinitions_2026-04-19.parquet"
