@@ -1,4 +1,4 @@
-# A `h1_hypothesis.py` laikusbarát összefoglalója
+# A `h1_hypothesis.py` egyszerű összefoglalója
 
 ## Mit akar kideríteni ez az elemzés?
 
@@ -300,7 +300,7 @@ A `h1_hypothesis.py` azt vizsgálja, hogy a kormányközeli és a független hí
 ---
 
 
-# A `h2_hypothesis.py` laikusbarát összefoglalója
+# A `h2_hypothesis.py` egyszerű összefoglalója
 
 ## Mit akar kideríteni ez az elemzés?
 
@@ -556,7 +556,7 @@ A `h2_hypothesis.py` azt vizsgálja, hogy a hírportálok **a negatívabb hangul
 ---
 ---
 
-# A `h3_hypothesis.py` laikusbarát összefoglalója
+# A `h3_hypothesis.py` egyszerű összefoglalója
 
 ## Mit akar kideríteni ez az elemzés?
 
