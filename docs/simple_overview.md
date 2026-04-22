@@ -295,6 +295,7 @@ A szkript logikája szerint a válasz erre az, hogy:
 
 A `h1_hypothesis.py` azt vizsgálja, hogy a kormányközeli és a független hírportálok **ugyanazokat a politikusokat más hangnemben és más vizuális hangsúllyal mutatják-e be**, és ezt ábrákkal, leíró statisztikákkal és Mann–Whitney U tesztekkel ellenőrzi.
 
+
 ---
 ---
 
@@ -553,4 +554,332 @@ Ha ezek többsége ugyanabba az irányba mutat, akkor a H2 erős támogatást ka
 A `h2_hypothesis.py` azt vizsgálja, hogy a hírportálok **a negatívabb hangulatú címeket jobban kiemelik-e a főoldalon**, és ezt többféle statisztikai módszerrel ellenőrzi — köztük egy regressziós modellel, amely azt is megmutatja, hogy ez a minta eltér-e a kormányközeli és a független portálok között.
 
 ---
+---
 
+# A `h3_hypothesis.py` laikusbarát összefoglalója
+
+## Mit akar kideríteni ez az elemzés?
+
+A `h3_hypothesis.py` azt vizsgálja, hogy a hírportálok **együtt mozognak-e abban, hogy miről írnak**, és hogy **ugyanazokat a témákat ugyanúgy tálalják-e**.
+
+Ez már nemcsak arról szól, hogy egy portál pozitívabban vagy negatívabban ír valakiről, hanem arról is, hogy:
+
+> **ha az egyik portál elkezd sokat írni valakiről vagy valamiről, a többi is ugyanakkor kezd-e el vele foglalkozni?**
+
+Ez az úgynevezett **napirend-kijelölés** kérdése.
+
+Egyszerűbben:
+- a média eldönti, miről beszélünk,
+- és azt is, hogy hogyan beszélünk róla.
+
+A H3 ezt a két dolgot külön vizsgálja.
+
+---
+
+## A H3 két fő kérdése
+
+### 1. Együtt mozognak-e a portálok?
+Ez azt nézi, hogy a portálok ugyanazokat az embereket vagy témákat **ugyanabban az időben** kezdik-e emlegetni.
+
+### 2. Ha ugyanaz a téma megjelenik, ugyanúgy tálalják-e?
+Ez azt nézi, hogy ugyanarról az entitásról:
+- ugyanolyan pozitívan vagy negatívan írnak-e,
+- és ugyanolyan erősen kiemelik-e a főoldalon.
+
+Vagyis a H3 egyszerre vizsgálja:
+- **miről írnak**
+- és **hogyan írnak róla**
+
+---
+
+## Milyen adatból dolgozik a szkript?
+
+A program minden headline-ról több fontos dolgot tud:
+
+- **melyik portálon jelent meg**
+- **melyik napon jelent meg**
+- **milyen entitásokat említ** (pl. egy politikust, szervezetet vagy témát)
+- **milyen a headline hangulata** (`sentiment_score`)
+- **mennyire volt kiemelve** a főoldalon (`norm_score`)
+
+A `norm_score` itt is portálon belül normalizált érték, tehát azt mutatja, hogy:
+
+> **az adott portál a saját rendszerén belül mennyire emelte ki ezt a címet**
+
+---
+
+## Mi történik az entitásokkal?
+
+Ha egy headline több szereplőt is említ, a program szétbontja őket külön sorokra.
+
+Például ha egy címben egyszerre szerepel:
+- Orbán Viktor
+- Magyar Péter
+
+akkor abból két elemzési sor lesz.
+
+Ez azért fontos, mert a H3 nem csak headline-okat néz, hanem azt, hogy:
+
+> **egy adott személy vagy téma milyen gyakran jelenik meg a különböző portálokon és napokon.**
+
+---
+
+# 1. rész: együtt mozognak-e a portálok?
+
+Ez a H3 első nagy kérdése.
+
+A program megnézi, hogy a legfontosabb entitásokból melyek jelennek meg a leggyakrabban, majd minden portálra elkészíti a napi említésszámukat.
+
+Ez úgy néz ki, mintha minden portálnak lenne egy naptára, és minden nap mellé odaírnánk:
+
+- ma hányszor írta le ezt a nevet,
+- hol ugrott meg a figyelem,
+- mikor tűnt el a témák közül.
+
+### Mit keres itt az elemzés?
+
+Azt, hogy a portálok görbéi mennyire hasonlítanak egymásra.
+
+Ha például:
+- hétfőn minden kormányközeli portál sokat ír ugyanarról az emberről,
+- kedden mindenhol visszaesik,
+- szerdán megint megugrik,
+
+akkor ez arra utal, hogy **együtt mozognak**.
+
+Ha viszont mindenki más napokon kapja fel ugyanazt a témát, akkor kevésbé szinkron a működés.
+
+---
+
+## Milyen statisztikai módszerrel nézi ezt a szkript?
+
+Itt a program a **Pearson-korrelációt** használja.
+
+### Nagyon egyszerűen mi ez?
+A Pearson-korreláció azt mutatja meg, hogy két idősor mennyire mozog együtt.
+
+- **magas pozitív érték** → a két portál ritmusa hasonló
+- **0 körüli érték** → nincs igazi együttmozgás
+- **negatív érték** → inkább ellentétesen mozognak
+
+### Hétköznapi példa
+Képzeld el, hogy két ember naponta felírja, mennyit beszél egy adott témáról.
+
+Ha az egyik sokat beszél róla pont akkor, amikor a másik is, és mindketten egyszerre hallgatnak el róla, akkor erős az együttmozgás.
+
+Pontosan ezt nézi a Pearson itt a portálok között.
+
+---
+
+## Hogyan jelenik ez meg az ábrákon?
+
+### Idősorábrák
+A szkript külön ábrákat rajzol a kormányközeli és a független portálokról.
+
+Ezeken minden vonal egy portál.
+
+Ha a vonalak hasonlóan hullámoznak, akkor a portálok hasonló ritmusban emelnek napirendre ugyanazokat az entitásokat.
+
+### Heatmap
+A program ezután készít egy olyan táblázatszerű színes ábrát is, ahol minden cella két portál kapcsolatát mutatja.
+
+- zöldebb szín → erősebb együttmozgás
+- semlegesebb szín → gyengébb kapcsolat
+- pirosasabb szín → ellenkező mozgás
+
+Ez segít gyorsan meglátni, hogy egy médiablokkon belül mennyire „együtt lélegeznek” a portálok.
+
+---
+
+## Mit akar ebből bizonyítani a H3?
+
+A H3 első része azt feltételezi, hogy:
+
+> **a kormányközeli portálok jobban szinkronban vannak egymással, mint a függetlenek**
+
+Ha ez igaz, az arra utalhat, hogy a kormányközeli médiában erősebb az összehangolt napirendképzés.
+
+Fontos viszont, hogy a kód maga is jelzi:
+
+> ez itt inkább erős leíró összehasonlítás, mint teljesen formális bizonyítás.
+
+Vagyis a program megnézi, melyik csoport átlagos korrelációja magasabb, de nem futtat külön nagyon szigorú statisztikai próbát arra, hogy ez a különbség biztosan szignifikáns-e.
+
+Ez fontos módszertani óvatosság.
+
+---
+
+# 2. rész: ha ugyanaz a téma megjelenik, ugyanúgy kezelik-e?
+
+Ez a H3 második nagy kérdése.
+
+A program megnézi a legfontosabb entitásokat, és mindegyiknél összehasonlítja:
+
+- milyen a szentiment a kormányközeli portálokon,
+- milyen a szentiment a független portálokon,
+- mekkora a vizuális hangsúly az egyik oldalon,
+- mekkora a másikon.
+
+Itt tehát már nem az a kérdés, hogy ugyanakkor kezdtek-e el írni róla, hanem az, hogy:
+
+> **ha már írnak róla, ugyanabban a stílusban és ugyanakkora erővel teszik-e?**
+
+---
+
+## Milyen statisztikai módszerrel vizsgálja ezt?
+
+Itt a szkript a **Mann–Whitney U tesztet** használja.
+
+### Nagyon egyszerűen mit csinál ez?
+Ez a teszt két csoportot hasonlít össze úgy, hogy nem feltételezi, hogy az adatok szépen, szabályosan oszlanak el.
+
+Ez azért jó, mert:
+- a szentiment-score nem biztos, hogy normális eloszlású,
+- a vizuális score sem feltétlen „szép” eloszlású,
+- lehetnek szélsőséges headline-ok.
+
+A teszt lényegében azt kérdezi:
+
+> **az egyik csoport értékei rendszeresen magasabbak vagy alacsonyabbak-e, mint a másiké?**
+
+---
+
+## Egyszerű példa erre
+
+Tegyük fel, hogy egy politikusról a kormányközeli portálok ilyen szentiment-értékeket kapnak:
+- 0.70
+- 0.75
+- 0.80
+
+A függetlenek pedig ilyeneket:
+- 0.40
+- 0.45
+- 0.50
+
+Itt szemre is látszik, hogy a kormányközeli portálok pozitívabban írnak róla.
+
+A Mann–Whitney ezt fordítja le egy formális kérdésre:
+
+> ez az eltérés elég következetes ahhoz, hogy ne csak a véletlen műve legyen?
+
+Ugyanez a logika működik a vizuális hangsúlyra is.
+
+---
+
+## Mit mutat a H3 táblázata?
+
+A táblázat minden entitásra külön megmutatja:
+
+- hány említés volt a kormányközeli oldalon,
+- hány a függetlenen,
+- melyik oldalon pozitívabb a szentiment,
+- melyik oldalon nagyobb a vizuális hangsúly,
+- és hogy ezek a különbségek szignifikánsak-e.
+
+### Hogyan kell olvasni?
+
+#### `sent_diff`
+- pozitív → a kormányközeli portálok pozitívabban írnak az entitásról
+- negatív → a független portálok pozitívabbak
+
+#### `vis_diff`
+- pozitív → a kormányközeli portálok jobban kiemelik
+- negatív → a függetlenek emelik ki jobban
+
+#### `sent_sig` és `vis_sig`
+Ezek azt jelzik, hogy a különbség statisztikailag elég erős-e.
+
+---
+
+## Mit mutat a kétpaneles ábra?
+
+A szkript készít egy ábrát, ahol:
+- az egyik oldalon a szentiment-különbségek látszanak,
+- a másik oldalon a vizuális hangsúly különbségei.
+
+Minden entitásnál egymás mellett látszik:
+- a kormányközeli átlag,
+- a független átlag.
+
+A csillag (`★`) azt jelzi, hogy az eltérés szignifikáns.
+
+Ez egy gyors áttekintést ad arról, hogy:
+- mely témák vagy szereplők körül a legnagyobb a médiakülönbség,
+- és hogy ez inkább a hangnemben, inkább a kiemelésben, vagy mindkettőben jelenik meg.
+
+---
+
+# Mi a H3 fő üzenete egyszerűen?
+
+A H3 lényegében két dolgot kérdez egyszerre:
+
+## 1. Együtt választják-e ki a témákat?
+Vagyis a portálok hasonló időben kezdenek-e el ugyanazokról a szereplőkről írni.
+
+## 2. Ugyanúgy csomagolják-e őket?
+Vagyis ha már ugyanarról írnak, ugyanolyan hangnemben és ugyanolyan feltűnően teszik-e.
+
+Ez azért fontos, mert a média hatása nemcsak abból áll, hogy mit mond, hanem abból is, hogy:
+- **mit tesz napirendre**
+- és **milyen keretben mutatja meg**
+
+---
+
+# Mire kell figyelni az eredmények értelmezésénél?
+
+A szkript maga is óvatos, és ez helyes.
+
+## 1. Az együttmozgás nem bizonyít automatikusan központi irányítást
+Ha két portál hasonlóan mozog, az jelenthet koordinációt, de jelentheti azt is, hogy:
+- ugyanazokra a nagy hírekre reagálnak,
+- ugyanaz az országos esemény mindenhol felkapott lett,
+- egyszerűen hasonló hírszerkesztési logikát követnek.
+
+Tehát az együttmozgás **gyanús lehet**, de önmagában nem végső bizonyíték.
+
+## 2. Sok külön teszt fut le
+A H3 sok entitásra külön-külön tesztel szentimentet és vizuális hangsúlyt. Ilyenkor mindig fennáll az esély, hogy néhány eredmény pusztán véletlenül tűnik szignifikánsnak.
+
+Ezért a H3 eredményeit érdemes úgy olvasni, mint:
+
+> **erős feltáró mintázatokat**, nem feltétlen végső, lezárt bizonyításokat.
+
+---
+
+# Egyszerű hétköznapi hasonlat
+
+Képzeld el, hogy több rádióadó működik egyszerre.
+
+A H3 két dolgot néz:
+
+### 1. Ugyanazokat a dalokat játsszák-e ugyanabban az időben?
+Ez a napirend-szinkronitás része.
+
+### 2. Ha ugyanaz a dal szól, ugyanúgy konferálják-e fel?
+- az egyik lelkesebben,
+- a másik hűvösebben,
+- az egyik fő műsoridőben,
+- a másik háttérben.
+
+Ez a framing, vagyis a keretezés része.
+
+Pontosan ezt próbálja meg a H3 a hírek világában számszerűsíteni.
+
+---
+
+# Mi a szkript végső logikája?
+
+A program a végén külön értékeli:
+
+- sikerült-e azt kimutatni, hogy a kormányközeli portálok jobban együtt mozognak,
+- és sikerült-e azt kimutatni, hogy ugyanazokat az entitásokat eltérően kezelik.
+
+Ezután ezekből áll össze az összesített H3-verdikt.
+
+Így a következtetés nem egyetlen számra épül, hanem két külön bizonyítékvonalra.
+
+---
+
+# Egy mondatban a lényeg
+
+A `h3_hypothesis.py` azt vizsgálja, hogy a hírportálok **mennyire mozognak együtt abban, hogy kiről és miről írnak**, és hogy **ugyanazokat az entitásokat mennyire eltérő hangnemben és vizuális hangsúllyal mutatják be**, ehhez Pearson-korrelációt és Mann–Whitney U teszteket használ.
