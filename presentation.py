@@ -121,6 +121,156 @@ def _():
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    # ----- Bevezető slide: projekt célja -----
+    mo.md(r"""
+    # Kontraszt – Médiaviselkedés a figyelemgazdaságban
+
+    ### *A magyar online hírportálok címlapjainak empirikus vizsgálata*
+
+    ---
+
+    ## Miről szól ez a kutatás?
+
+    A **figyelem** a digitális médiatér legszűkösebb erőforrása (Simon, Goldhaber).
+    A hírportálok nem pusztán információt közölnek: **vizuális hierarchiával,
+    kiemeléssel és érzelmi tónussal** versenyeznek az olvasó figyelméért.
+
+    Ez a projekt a figyelemgazdaság **kínálati oldalát** méri – azt,
+    hogy a szerkesztőség **mely híreket próbálja figyelemre méltóvá tenni**,
+    nem azt, hogy az olvasó ténylegesen mire kattint.
+
+    ## Kutatási kérdés
+
+    > Hogyan tükröződik a magyar online hírportálok szerkesztési gyakorlatában
+    > (vizuális hangsúly és érzelmi töltet) a választási kampány dinamikája,
+    > és mennyire mutatnak **homogén képet** az egyes politikai szereplők
+    > megjelenítésében?
+
+    ## Három hipotézis
+
+    | | Hipotézis | Fókusz |
+    |---|---|---|
+    | **H1** | **Polarizáció** – a kormányközeli és független portálok eltérő szentimenttel és vizuális súllyal jelenítik meg ugyanazokat a politikai szereplőket | *portáltípus × entitás* |
+    | **H2** | **Vizuális hangsúly** – a negatív címsorok átlagosan magasabb „fontossági pontszámot" kapnak, mint a semlegesek | *sentiment → score* |
+    | **H3** | **Napirend-kijelölés** – a kulcsszereplők megjelenése időben korrelál a portálok között, de a hozzájuk társított dinamika portálspecifikus | *koordináció + framing* |
+
+    ## Mérnöki háttér – saját teljes pipeline
+
+    - **Scraper** (`kontraszt`): 21 magyar hírportál óránkénti főoldal-mérése
+      (Playwright + Crawlee + Convex)
+    - **LLM-service** (`kontraszt-llm_service`): headline-onkénti szentiment-,
+      entitás- és címke-elemzés (JSON-schema kényszerítéssel)
+    - **Research notebook** (ez a prezentáció): Polars + SciPy + statsmodels,
+      marimo-alapú reprodukálható elemzés
+
+    ## Üzenet
+
+    A médiafogyasztók tudatosságának növelése: **hogyan manipulál egy vizuális
+    elrendezés** – kvantitatívan, adatvezérelten, nem benyomások alapján.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    # ----- Adatgyűjtés 1. slide: Scraper (kontraszt) -----
+    mo.md(r"""
+    # Adatgyűjtés I. – Főoldali scraper (`kontraszt`)
+
+    ## Cél
+    A 21 legolvasottabb magyar hírportál **főoldali szalagcímeinek** és azok
+    **vizuális paramétereinek** óránkénti rögzítése – ez adja a „figyelem
+    kínálati oldalának" nyers mérőszámait.
+
+    ## Technológia
+    - **Playwright + Crawlee** (TypeScript) – valódi böngésző renderel, így a
+      JS-sel betöltődő címsorok is láthatók; pontos DOM-geometria mérhető
+    - **Convex** backend – típusos séma, real-time szinkronizáció
+    - **Docker Compose** + cron – futás óránként, webhook értesíti az LLM-szolgáltatást
+
+    ## Portálok (21 db)
+    Telex, Origo, Blikk, 24.hu, Index, BorsOnline, 444.hu, Magyar Nemzet, Ripost,
+    HVG, ATV, Hirado.hu, Metropol, Nepszava, Mandiner, PestiSracok, Napi,
+    Valasz Online, Vilaggazdasag, Portfolio, Magyar Hang
+
+    ## Két tábla (`convex/schema.ts`)
+
+    | `headlineDefinitions` | `headlines` |
+    |---|---|
+    | `hashedId` (SHA1 a URL-ből) | `hashedId` |
+    | `siteName` | `score`, `fontSize` |
+    | `headlineText` | `width`, `height`, `x`, `y` |
+    | `href` | `scrapedAt` |
+
+    → **Cím = definíció** (1×), **megjelenés = snapshot** (N× óránként).
+
+    ## A vizuális „fontossági pontszám" (`score`)
+
+    $$\text{score} = 100 \cdot \text{fontSize} + 0.1 \cdot \text{area} - 6y - 3.5x - 4 \cdot x \cdot \max\!\left(0,\ 1 - \tfrac{y}{600}\right)$$
+
+    - **+ nagy betű** és **nagy terület** → több figyelem
+    - **− lejjebb/jobbra** → kisebb hangsúly (a szem balra fent kezd)
+    - **− jobb felső büntetés** csak a „top zónára" (y < 600 px) érvényes –
+      ott a reklámhelyek kiszűrésére
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    # ----- Adatgyűjtés 2. slide: LLM service -----
+    mo.md(r"""
+    # Adatgyűjtés II. – LLM-elemzés (`kontraszt-llm_service`)
+
+    ## Cél
+    Minden új headline-hoz strukturált **szemantikai annotáció** készítése:
+    szentiment, entitások, címke – ezek a H1–H3 hipotézisek magyarázó változói.
+
+    ## Pipeline
+
+    ```
+    [Scraper Convex]  ──webhook──▶  [LLM-service]  ──batch──▶  [Kilo API (LLM)]
+          │                              │                            │
+          │                              │◀──JSON schema válasz───────┘
+          │                              ▼
+          └──────────────────────▶ [Target Convex] ──▶ llmAnalysis tábla
+    ```
+
+    - Node.js szolgáltatás (`apps/llm-service`), `POST /webhook/scrape-complete`
+      végponttal – a scraper futása után automatikusan indul
+    - **Forrás Convex**-ből olvas pager-rel (`SOURCE_PAGE_SIZE=200`),
+      **cél Convex**-be ír batch-ben (`CONVEX_SAVE_BATCH_SIZE=200`)
+    - **Kilo API gateway** (`api.kilo.ai`) felé OpenAI-kompatibilis
+      `chat/completions` hívás, **JSON Schema**-kényszerítéssel
+
+    ## A promptra kért mezők (headline-onként)
+
+    | Mező | Típus | Leírás |
+    |---|---|---|
+    | `label` | string | tematikus címke |
+    | `sentiment` | string | negatív / semleges / pozitív |
+    | **`sentiment_score`** | float 0–1 | 0 = teljesen negatív, 1 = teljesen pozitív |
+    | **`entities`** | string[] | szereplők, szervezetek (pl. „Orbán Viktor") |
+    | `confidence` | float 0–1 | modell önbizalma |
+
+    Ez a struktúra garantálja, hogy minden címsorhoz **ugyanaz** a négy
+    elemzési dimenzió álljon rendelkezésre → közvetlenül csatlakoztatható
+    a `headlineDefinitions`-höz `hashedId` mentén.
+
+    ## Megbízhatóság
+    - **JSON Schema** response format → nincs parsing-hiba
+    - **Retry logika** max 3 kísérlettel batchenként
+    - **Pointer-alapú szinkronizáció** (`SYNC_STATE_KEY`) → sosem dolgoz fel
+      kétszer ugyanazt a headline-t
+
+    > Az eredmény a kutatás három parquet fájlja:
+    > `headlineDefinitions`, `headlines`, `llmAnalysis` – `hashedId` join-kulccsal.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
 def _(df_tests, mo, pl):
     # ----- Slide 1: Hipotézis + módszertan -----
     _n = df_tests.filter(pl.col("p-érték") < 0.05).height
