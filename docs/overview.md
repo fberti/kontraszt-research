@@ -260,7 +260,7 @@ A headline-metaadatok, az LLM-szentiment és a vizuális score összejoinolódik
 A különböző portálok layoutja eltérő. Ami az egyik oldalon „nagy kiemelés”, az a másikon lehet átlagos. Ezért a szkript **portálonként** normalizál:
 
 $$
-\text{norm\_score} = \frac{\text{mean\_score} - \text{min}}{\text{max} - \text{min}}
+\mathrm{normScore} = \frac{\mathrm{meanScore} - \mathrm{min}}{\mathrm{max} - \mathrm{min}}
 $$
 
 Így minden portálon belül:
@@ -454,7 +454,7 @@ A regresszió pont erre jó: egyszerre becsüli meg a tényezők önálló és k
 A kód ezt a lineáris modellt becsli:
 
 $$
-\text{norm\_score} = \beta_0 + \beta_1 \cdot \text{sentiment\_score} + \beta_2 \cdot \text{gov} + \beta_3 \cdot (\text{sentiment\_score} \times \text{gov}) + \varepsilon
+\mathrm{normScore} = \beta_0 + \beta_1 \cdot \mathrm{sentimentScore} + \beta_2 \cdot \mathrm{gov} + \beta_3 \cdot (\mathrm{sentimentScore} \times \mathrm{gov}) + \varepsilon
 $$
 
 ahol:
@@ -841,7 +841,7 @@ Ez azt biztosítja, hogy:
 A H1-hez és H2-höz hasonlóan a vizuális hangsúly itt is **portálonként min-max normalizált**:
 
 $$
-\text{norm\_score} = \frac{\text{mean\_score} - \text{score\_min}}{\text{score\_max} - \text{score\_min}}
+\mathrm{normScore} = \frac{\mathrm{meanScore} - \mathrm{scoreMin}}{\mathrm{scoreMax} - \mathrm{scoreMin}}
 $$
 
 Ez azért fontos, mert különböző portálok eltérő designnal dolgoznak. A kutatási kérdés itt sem az, hogy abszolút pixelben melyik volt nagyobb, hanem az, hogy:
