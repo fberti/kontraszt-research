@@ -251,7 +251,7 @@ Ha nyers score-okat hasonlítanánk össze, könnyen összekevernénk:
 Ezért portálon belüli min-max normalizálást használunk:
 
 $$
-\text{norm\_score} = \frac{\text{score} - \min(\text{score})}{\max(\text{score}) - \min(\text{score})}
+\mathrm{normScore} = \frac{\mathrm{score} - \min(\mathrm{score})}{\max(\mathrm{score}) - \min(\mathrm{score})}
 $$
 
 ### Mit jelent ez emberileg?
