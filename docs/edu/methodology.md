@@ -473,7 +473,7 @@ H2-ben például ezt kérdezzük:
 
 ### Az alapmodell
 $$
-\text{norm\_score} = \beta_0 + \beta_1 \cdot \text{sentiment} + \beta_2 \cdot \text{gov} + \beta_3 \cdot (\text{sentiment} \times \text{gov}) + \varepsilon
+\mathrm{normScore} = \beta_0 + \beta_1 \cdot \mathrm{sentiment} + \beta_2 \cdot \mathrm{gov} + \beta_3 \cdot (\mathrm{sentiment} \times \mathrm{gov}) + \varepsilon
 $$
 
 ahol:
