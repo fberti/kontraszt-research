@@ -636,6 +636,94 @@ A szkript a `statsmodels` OLS-modellt használja, és táblába rendezi:
 - p-érték
 - szignifikancia-jelölés
 
+Emellett kiír néhány **modell-illeszkedési mutatót** is:
+
+- **N (mintaméret)**
+- **R²**
+- **R² (korrigált)**
+- **F-statisztika**
+- **az F-teszt p-értéke**
+
+A jelenlegi futásban ezek nagyjából a következők:
+
+- **N = 29686**
+- **R² = 0.0706**
+- **R² (korrigált) = 0.0706**
+- **F = 752.15**
+- **p < 0.001**
+
+### 📏 Mit jelent itt az R²?
+
+Az **R²** azt mutatja meg, hogy a regressziós modell a kimeneti változó, vagyis a `norm_score` **szóródásának mekkora részét tudja megmagyarázni**.
+
+Itt:
+
+- **R² = 0.0706**, vagyis kb. **7,1%**
+
+Ez azt jelenti, hogy a modellben szereplő változók:
+
+- `sentiment_score`
+- `gov`
+- `sentiment_score × gov`
+
+**együtt a vizuális hangsúly varianciájának körülbelül 7%-át magyarázzák meg**.
+
+A maradék **kb. 93%** más tényezőkből jön, amelyek nincsenek benne ebben a modellben. Ilyen lehet például:
+
+- a hír témája,
+- hogy breaking news-ról van-e szó,
+- mennyire politikailag fontos az ügy,
+- van-e hozzá kép vagy kiemelt vizuális elem,
+- milyen a portál szerkesztési logikája,
+- napszak vagy ciklushatás,
+- egyéb, nem mért szerkesztői szempontok.
+
+### ✅ Ez akkor jó vagy rossz?
+
+Önmagában az, hogy az R² **nem nagy**, még **nem probléma**. Társadalomtudományi és médiakutatási adatoknál teljesen gyakori, hogy egy modell csak a variancia kisebb részét magyarázza meg, mert az emberi döntéseket sok, nehezen mérhető tényező alakítja.
+
+Itt tehát a helyes olvasat nem az, hogy a modell „rossz”, hanem az, hogy:
+
+> **a szentimentnek van kimutatható kapcsolata a vizuális hangsúllyal, de önmagában nem ez az egyetlen vagy domináns magyarázó tényező.**
+
+Másképp: a negatívabb címek kiemelése **létező mintázat**, de a főoldali hangsúlyozást sok minden más is befolyásolja.
+
+### 🔧 Mi a korrigált R²?
+
+A **korrigált R²** figyelembe veszi, hogy hány prediktor van a modellben, és valamennyire „bünteti” a feleslegesen bevett változókat.
+
+Mivel itt az R² és a korrigált R² szinte ugyanaz:
+
+- **R² = 0.070649...**
+- **korrigált R² = 0.070556...**
+
+az arra utal, hogy a modell változói nem csak mesterségesen javítják az illeszkedést, hanem valóban hordoznak információt.
+
+### 🧪 Mit jelent az F-statisztika?
+
+Az **F-teszt** azt vizsgálja, hogy a modell **egészében** jobb-e, mint egy olyan nagyon egyszerű modell, amely semmit nem használ a magyarázó változókból, csak a `norm_score` átlagát becsüli.
+
+Itt:
+
+- **F = 752.15**
+- **p < 0.001**
+
+Ez azt jelenti, hogy a modell **összességében szignifikáns**: a benne szereplő változók együtt nem véletlenül kapcsolódnak a vizuális hangsúlyhoz.
+
+Nagyon fontos, hogy ez **nem ugyanaz**, mint a magas R². Lehet egy modell:
+
+- **szignifikáns**,
+- de **alacsony R²-ű**.
+
+Ez pontosan az itt látható helyzet:
+
+- van benne **valódi statisztikai jel**,
+- de a teljes varianciának csak kisebb részét fogja meg.
+
+### 🧠 Egy mondatban a modell-illeszkedés értelmezése
+
+> A regressziós modell statisztikailag egyértelműen szignifikáns, de a magyarázóereje mérsékelt/alacsony: a szentiment és a portáltípus kimutathatóan összefügg a vizuális hangsúllyal, ugyanakkor a hangsúlyozás varianciájának nagy részét más, a modellben nem szereplő tényezők adják.
+
 #### Mit nézzünk először?
 
 ##### 1. `β₁` – a fő H2 jel
